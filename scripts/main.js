@@ -87,8 +87,19 @@ applicationElement.addEventListener("click", event => {
 		const snackId = event.target.id.split("__")[1];
 		getSingleSnack(snackId)
 			.then(snackObj => {
+				return fetch("http://localhost:8088/snackToppings?_expand=topping")
+				.then(resp => resp.json())
+				.then(arr => {
+					debugger
+					let arrOfToppings = []
+					for (const eachThing of arr) {
+						if(eachThing.snackId === parseInt(snackId)) {
+							arrOfToppings.push(eachThing.topping)
+						}
+					}
+					showDetails(snackObj, arrOfToppings);
+					})
 
-				showDetails(snackObj);
 			})
 	}
 })
@@ -100,9 +111,9 @@ applicationElement.addEventListener("click", event => {
 	}
 })
 
-const showDetails = (snackObj) => {
+const showDetails = (snackObj, toppingsArray) => {
 	const listElement = document.querySelector("#mainContent");
-	listElement.innerHTML = SnackDetails(snackObj);
+	listElement.innerHTML = SnackDetails(snackObj, toppingsArray);
 }
 //end snack listeners
 
