@@ -1,14 +1,13 @@
-console.log('yum, yum, yum');
-
 import { LoginForm } from "./auth/LoginForm.js";
 import { RegisterForm } from "./auth/RegisterForm.js";
 import { NavBar } from "./nav/NavBar.js";
 import { SnackList } from "./snacks/SnackList.js";
 import { SnackDetails } from "./snacks/SnackDetails.js";
 import { Footer } from "./nav/Footer.js";
+import { populateDropdown } from './toppings/toppings.js';
 import {
 	logoutUser, setLoggedInUser, loginUser, registerUser, getLoggedInUser,
-	getSnacks, getSingleSnack
+	getSnacks, getSingleSnack, useSnackCollection
 } from "./data/apiManager.js";
 
 
@@ -39,7 +38,8 @@ applicationElement.addEventListener("click", event => {
 		//collect all the details into an object
 		const userObject = {
 			name: document.querySelector("input[name='registerName']").value,
-			email: document.querySelector("input[name='registerEmail']").value
+			email: document.querySelector("input[name='registerEmail']").value,
+			isAdmin: false
 		}
 		registerUser(userObject)
 			.then(dbUserObj => {
@@ -58,6 +58,27 @@ applicationElement.addEventListener("click", event => {
 })
 // end login register listeners
 
+//Topping Dropdown listener
+applicationElement.addEventListener("change", event => {
+	if (event.target.id === "toppingDropdown") {
+		const index = event.target.options.selectedIndex;
+		//Below - This variable is the ID of the selected topping
+		const selectedOptionId = event.target.options[index].value;
+		const snackArr = useSnackCollection()
+		const filteredArr = snackArr.filter(eachSnack => {
+			const snack = eachSnack.snackToppings.find(aTopping => aTopping.toppingId === parseInt(selectedOptionId))
+			if (snack) {
+				return eachSnack
+			}
+		})
+		const divSelector = document.querySelector("#mainContent")
+		divSelector.innerHTML = SnackList(filteredArr)
+
+	}
+})
+
+//End Topping Dropdown listener
+
 // snack listeners
 applicationElement.addEventListener("click", event => {
 	event.preventDefault();
@@ -65,8 +86,9 @@ applicationElement.addEventListener("click", event => {
 	if (event.target.id.startsWith("detailscake")) {
 		const snackId = event.target.id.split("__")[1];
 		getSingleSnack(snackId)
-			.then(response => {
-				showDetails(response);
+			.then(snackObj => {
+
+				showDetails(snackObj);
 			})
 	}
 })
@@ -122,7 +144,8 @@ const startLDSnacks = () => {
 	applicationElement.innerHTML += `<div id="mainContent"></div>`;
 	showSnackList();
 	showFooter();
-
+	populateDropdown();
+	
 }
 
 checkForUser();
