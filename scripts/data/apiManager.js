@@ -59,7 +59,7 @@ export const useSnackCollection = () => {
 }
 
 export const getSnacks = () => {
-	return fetch(`${apiURL}/snacks`)
+	return fetch(`${apiURL}/snacks/?_embed=snackToppings`)
 		.then(response => response.json())
 		.then(parsedResponse => {
 			snackCollection = parsedResponse
@@ -68,6 +68,6 @@ export const getSnacks = () => {
 }
 
 export const getSingleSnack = (snackId) => {
-	return fetch(`${apiURL}/snacks/${snackId}`)
+	return fetch(`${apiURL}/snacks/${snackId}?_expand=type&_expand=inFlavor&_expand=shape&_expand=season`)
 	.then(response => response.json())
 }
