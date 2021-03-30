@@ -1,9 +1,11 @@
 export const SnackDetails = (snackObject, toppingsArray) => {
 	let detailHTML = ''
+	//for each object in the toppings array, add the value of the name property followed by a comma and space to our empty string
+	//detailHTML becomes a string that lists out every topping name from the array passed into this function
 	for (const eachTopping of toppingsArray) {
 		detailHTML += `${eachTopping.name}, `
 	}
-
+	//return the HTML containing the snack objects info, and the toppings list
 	return `
 	<div class="col">
 		<div class="card shadow-sm" >

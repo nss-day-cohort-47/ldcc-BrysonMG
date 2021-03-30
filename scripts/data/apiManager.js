@@ -59,6 +59,8 @@ export const useSnackCollection = () => {
 }
 
 export const getSnacks = () => {
+	//This fetch gets all snacks and _embeds the snackToppings
+	//This lists the topping ids for the toppings on each snack
 	return fetch(`${apiURL}/snacks/?_embed=snackToppings`)
 		.then(response => response.json())
 		.then(parsedResponse => {
@@ -68,6 +70,9 @@ export const getSnacks = () => {
 }
 
 export const getSingleSnack = (snackId) => {
+	//This fetch gets the single snack whose id matches the id given to this function
+	//Using _expand, get the names of the type, flavor, shape, and season, rataher than just the id
+	//returns a snack object
 	return fetch(`${apiURL}/snacks/${snackId}?_expand=type&_expand=inFlavor&_expand=shape&_expand=season`)
 	.then(response => response.json())
 }

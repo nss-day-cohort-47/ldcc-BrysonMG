@@ -30,8 +30,8 @@ applicationElement.addEventListener("click", event => {
 					startLDSnacks();
 				} else {
 					//got a false value - no user
-					const entryElement = document.querySelector(".entryForm");
-					entryElement.innerHTML = `<p class="center">That user does not exist. Please try again or register for your free account.</p> ${LoginForm()} <hr/> <hr/> ${RegisterForm()}`;
+					applicationElement.innerHTML = ""
+					applicationElement.innerHTML = `${NavBar()}<p class="center">That user does not exist. Please try again or register for your free account.</p> ${LoginForm()} <hr/> <hr/> ${RegisterForm()}`;
 				}
 			})
 	} else if (event.target.id === "register__submit") {
@@ -65,7 +65,13 @@ applicationElement.addEventListener("change", event => {
 		//Below - This variable is the ID of the selected topping
 		const selectedOptionId = event.target.options[index].value;
 		const snackArr = useSnackCollection()
+		
 		const filteredArr = snackArr.filter(eachSnack => {
+			//check eachSnack of snackArr. Access the snackToppings property which is an array of objects
+			//each object in that array is a topping on that snack (eachSnack)
+			//inside that array .find aTopping whose toppingId matches the selectedOptionId that we get from our dropdown selection
+			//.find returns an undefined each time the ids don't match, so if it evaluates truthy, return that snack
+			//filteredArr becomes an array containing all of the snack objects containing the selected topping
 			const snack = eachSnack.snackToppings.find(aTopping => aTopping.toppingId === parseInt(selectedOptionId))
 			if (snack) {
 				return eachSnack
@@ -85,18 +91,25 @@ applicationElement.addEventListener("click", event => {
 
 	if (event.target.id.startsWith("detailscake")) {
 		const snackId = event.target.id.split("__")[1];
+		//first we get the one snack from the db whose detail button we clicked
 		getSingleSnack(snackId)
 			.then(snackObj => {
+				//Do another fetch to get all snackToppings relationships, and _expand topping to get the name of each topping
 				return fetch("http://localhost:8088/snackToppings?_expand=topping")
 				.then(resp => resp.json())
 				.then(arr => {
-					debugger
+					//this fetch returns an array of objects
+					//declare an empty array to store the objects we want
 					let arrOfToppings = []
+					//for each object in the array, if the objects snackId matches the id of the snack collected by our button click...
+					//push the value of the topping property (an object with the topping name) of the object that matched to our empty array
+					//arrOfToppings becomes an array of objects containing the names of the toppings our selected snack has
 					for (const eachThing of arr) {
 						if(eachThing.snackId === parseInt(snackId)) {
 							arrOfToppings.push(eachThing.topping)
 						}
 					}
+					//Pass our selected snackObj and our array of toppings into the showDetails function
 					showDetails(snackObj, arrOfToppings);
 					})
 
